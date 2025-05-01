@@ -1,0 +1,722 @@
+import React, { Component } from 'react';
+import { AppRegistry, Text, View, StyleSheet, Image, TextInput, ImageBackground, TouchableHighlight, Alert, Dimensions, ScrollView } from 'react-native';
+import Constants from 'expo-constants';
+
+let deviceHeight = Dimensions.get('window').height;
+let deviceWidth = Dimensions.get('window').width;
+
+export default class App extends Component {
+    state = {
+        team1: ' ',
+        team2: ' ',
+        team1Score: 0,
+        team2Score: 0,
+        team1Record: [0, 0, 0],
+        gameRecords: [],
+        namesPageDisplay: 'none',
+        scoringPageDisplay: 'block',
+        standingsPageDisplay: 'none',
+        positionsPageDisplay: 'none',
+        date: '',
+        newDate: 'Enter Date: ',
+        team1FinalScore: 0,
+        team2FinalScore: 0,
+        
+        positions: [
+            {
+                name: 'Goalkeeper (GK)',
+                fieldArea: 'Almost always in goal',
+                commonNumbers: '1, 12, 13, 22, 23',
+            },
+            
+            {
+                name: 'Centerback (CB)',
+                fieldArea: 'Defender, almost always stays back',
+                commonNumbers: '3, 4',
+            },
+            
+            {
+                name: 'Fullback (RB/LB)',
+                fieldArea: 'Defends on the side, also goes forward to attack',
+                commonNumbers: '2, 5',
+            },
+            
+            {
+                name: 'Central Defensive Midfielder (CDM)',
+                fieldArea: 'Mostly defends, controls speed of play',
+                commonNumbers: '5, 6',
+            },
+            
+            {
+                name: 'Centermid (CM)',
+                fieldArea: 'Center of the field, does both attack and defense',
+                commonNumbers: '6, 8, 10',
+            },
+            
+            {
+                name: 'Central Attacking Midfielder (CAM)',
+                fieldArea: 'Mostly attacks, is usually the playmaker',
+                commonNumbers: '8, 10',
+            },
+            
+            {
+                name: 'Winger (RW/LW)',
+                fieldArea: 'Attacks on the side, creates most scoring chances',
+                commonNumbers: '7, 10, 11',
+            },
+            
+            {
+                name: 'Centerforward (CF)',
+                fieldArea: 'Attacker, almost always stays up front',
+                commonNumbers: '9',
+            },
+        ]
+    }
+    
+    handleNamesPagePress = () => this.setState(state=> ({
+            namesPageDisplay: 'block',
+            scoringPageDisplay: 'none',
+            standingsPageDisplay: 'none',
+            positionsPageDisplay: 'none'
+    }));
+    
+    handleScoringPagePress = () => this.setState(state=> ({
+            namesPageDisplay: 'none',
+            scoringPageDisplay: 'block',
+            standingsPageDisplay: 'none',
+            positionsPageDisplay: 'none'
+    }));
+    
+    handleStandingsPagePress = () => this.setState(state=> ({
+            namesPageDisplay: 'none',
+            scoringPageDisplay: 'none',
+            standingsPageDisplay: 'block',
+            positionsPageDisplay: 'none'
+    }));
+    
+    handlePositionsPagePress = () => this.setState(state=> ({
+            namesPageDisplay: 'none',
+            scoringPageDisplay: 'none',
+            standingsPageDisplay: 'none',
+            positionsPageDisplay: 'block'
+    }));
+    
+    increaseTeam1Score = () => {
+        this.setState({
+            team1Score: this.state.team1Score + 1
+        })
+    };
+    
+    increaseTeam2Score = () => {
+        this.setState({
+            team2Score: this.state.team2Score + 1
+        })
+    };
+    
+    updateStandings = (team1score, team2score) => {
+        this.setState({
+            team1Score: 0,
+            team2Score: 0
+        })
+        
+        if (team1score > team2score) {
+            this.setState({
+                team1Record: [this.state.team1Record[0] + 1, this.state.team1Record[1], this.state.team1Record[2]]
+            })
+        }
+        
+        else if (team2score > team1score) {
+            this.setState({
+                team1Record: [this.state.team1Record[0], this.state.team1Record[1], this.state.team1Record[2] + 1]
+            })
+        }
+        
+        else {
+            this.setState({
+                team1Record: [this.state.team1Record[0], this.state.team1Record[1] + 1, this.state.team1Record[2]]
+            })
+        }
+        
+        this.state.gameRecords.splice(this.state.gameRecords.length, 0, {
+            newDate: this.state.date,
+            team1FinalScore: team1score,
+            team2FinalScore: team2score
+        })
+        
+        this.setState({
+            newDate: 'Enter Date: '
+        })
+    }
+    
+    render() {
+        return (
+            <View style={styles.container}>
+                <View style={{display: this.state.scoringPageDisplay}}>
+                <View style={styles.content}>
+                <ImageBackground
+                    style={styles.background}
+                    source={{ uri: 'https://as2.ftcdn.net/v2/jpg/04/15/85/45/1000_F_415854570_O2ybQ25EXxcQHWYFRjdqt5L3eOkRhLIw.jpg' }}
+                >
+                    <View>
+                        <Text style={styles.title}>
+                            SOCCER SCOREKEEPER
+                        </Text>
+                    </View>
+                
+                    <View style={styles.buttonContainer}>
+                        <TouchableHighlight style={styles.button}
+                            onPress={this.increaseTeam1Score}
+                        >
+                        
+                            <Text style={styles.buttonText}>
+                                {this.state.team1} GOAL!!!
+                            </Text>
+                        </TouchableHighlight>
+                    
+                        <TouchableHighlight style={styles.button}
+                            onPress={this.increaseTeam2Score}
+                        >
+                        
+                            <View style={styles.buttonText}>
+                              {this.state.team2} GOAL!!!
+                            </View>
+                        </TouchableHighlight>
+                    </View>
+                
+                    <View>
+                        <Text style={styles.score}>
+                            SCORE:
+                        </Text>
+                    </View>
+                
+                    <View style={styles.team1ScoreContainer}>
+                       <View style={styles.teamBox}>
+                           {this.state.team1}
+                       </View>
+                          
+                        <View style={styles.teamScoreBox}>
+                            <Text style={styles.score}>
+                                {this.state.team1Score}
+                            </Text>
+                        </View>
+                    </View>
+                
+                    <View style={styles.team2ScoreContainer}>
+                        <View style={styles.teamBox}>
+                            {this.state.team2}
+                        </View>
+                        
+                        <View style={styles.teamScoreBox}>
+                            <Text style={styles.score}>
+                                {this.state.team2Score}
+                            </Text>
+                        </View>
+                    </View>
+                    
+                    <View style={styles.team2ScoreContainer}>
+                        <TextInput style={styles.dateBox}
+                            onChangeText={(date) => this.setState({date})}
+                            value={this.state.date}
+                        />   
+                    
+                        <TouchableHighlight style={styles.submitButton}
+                            onPress={() => this.updateStandings(this.state.team1Score, this.state.team2Score)}
+                        >
+                            <Text style={styles.submitButtonText}>
+                                Submit Score
+                            </Text>
+                        </TouchableHighlight>
+                    </View>
+                    
+                    <View style={styles.imageContainer}>
+                        <Image
+                            source={{ uri: 'https://www.shareicon.net/data/512x512/2016/02/16/720214_fighter_512x512.png' }}
+                            style={{ height: deviceHeight/6, width: deviceWidth/3.7}}
+                        />
+                    
+                        <Image
+                            source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Soccerball.svg/800px-Soccerball.svg.png' }}
+                            style={{ height: deviceHeight/14, width: deviceWidth/7}}
+                        />
+                        
+                        <Image
+                            source={{ uri: 'https://kwikgoal.com/wp-content/uploads/2020/02/2B3306_1-scaled.jpg' }}
+                            style={{ height: deviceHeight/8, width: deviceHeight/3.4}}
+                        />
+                    </View>
+                </ImageBackground>
+                </View>
+                
+                <View style={styles.navBar}>
+                    <TouchableHighlight style={styles.navButton}
+                        onPress={this.handleNamesPagePress}
+                    >
+                        <Text style={styles.buttonText}>
+                            Team Names
+                        </Text>
+                    </TouchableHighlight>
+                    
+                    <TouchableHighlight style={styles.navButton}
+                        onPress={this.handleScoringPagePress}
+                    >
+                        <Text style={styles.buttonText}>
+                            Scoring
+                        </Text>
+                    </TouchableHighlight>
+                    
+                    <TouchableHighlight style={styles.navButton}
+                            onPress={this.handleStandingsPagePress}
+                        >
+                            <Text style={styles.buttonText}>
+                                Standings
+                            </Text>
+                    </TouchableHighlight>
+                    
+                    <TouchableHighlight style={styles.navButton}
+                            onPress={this.handlePositionsPagePress}
+                        >
+                            <Text style={styles.buttonText}>
+                                Positions
+                            </Text>
+                    </TouchableHighlight>
+                </View>
+                </View>
+                
+                <View style={{display: this.state.namesPageDisplay}}>
+                    <View style={styles.teamNamesContent}>
+                        <ImageBackground
+                            style={styles.background}
+                            source={{ uri: 'https://as2.ftcdn.net/v2/jpg/04/15/85/45/1000_F_415854570_O2ybQ25EXxcQHWYFRjdqt5L3eOkRhLIw.jpg' }}
+                        >
+                        
+                        <View>
+                            <Text style={styles.namesPageTitle}>
+                                Team Names        
+                            </Text>
+                        </View>
+                            
+                        <View style={styles.team1ScoreContainer}>
+                            <TextInput style={styles.namesPageTeamBox}
+                                onChangeText={(team1) => this.setState({team1})}
+                                value={this.state.team1}
+                            />
+                        </View>
+                        
+                        <View style={styles.team2ScoreContainer}>
+                            <TextInput style={styles.namesPageTeamBox}
+                                onChangeText={(team2) => this.setState({team2})}
+                                value={this.state.team2}
+                            />
+                        </View>
+                        </ImageBackground>
+                    </View>
+                    
+                    <View style={styles.navBar}>
+                    <TouchableHighlight style={styles.navButton}
+                        onPress={this.handleNamesPagePress}
+                    >
+                        <Text style={styles.buttonText}>
+                            Team Names
+                        </Text>
+                    </TouchableHighlight>
+                    
+                    <TouchableHighlight style={styles.navButton}
+                        onPress={this.handleScoringPagePress}
+                    >
+                        <Text style={styles.buttonText}>
+                            Scoring
+                        </Text>
+                    </TouchableHighlight>
+                    
+                    <TouchableHighlight style={styles.navButton}
+                            onPress={this.handleStandingsPagePress}
+                        >
+                            <Text style={styles.buttonText}>
+                                Standings
+                            </Text>
+                    </TouchableHighlight>
+                    
+                    <TouchableHighlight style={styles.navButton}
+                            onPress={this.handlePositionsPagePress}
+                    >
+                            <Text style={styles.buttonText}>
+                                Positions
+                            </Text>
+                    </TouchableHighlight>
+                    </View>
+                </View>
+                
+                <View style={{display: this.state.standingsPageDisplay}}>
+                    <View style={styles.teamNamesContent}>
+                        <ImageBackground
+                            style={styles.background}
+                            source={{ uri: 'https://as2.ftcdn.net/v2/jpg/04/15/85/45/1000_F_415854570_O2ybQ25EXxcQHWYFRjdqt5L3eOkRhLIw.jpg' }}
+                        >
+                        
+                        <View>
+                            <Text style={styles.namesPageTitle}>
+                                Team Standings    (W-D-L)      
+                            </Text>
+                        </View>
+                        
+                        <View>
+                            <Text style={styles.namesPageTitle}>
+                                {this.state.team1}: {this.state.team1Record[0]}-{this.state.team1Record[1]}-{this.state.team1Record[2]}
+                            </Text>
+                        
+                            <Text style={styles.namesPageTitle}>
+                                {this.state.team2}: {this.state.team1Record[2]}-{this.state.team1Record[1]}-{this.state.team1Record[0]}
+                            </Text>
+                        </View>
+                        
+                        <View style={styles.standingsBox}>
+                            <Text style={styles.buttonText}>
+                                Date of Game    {this.state.team1}    {this.state.team2}
+                            </Text>
+                            
+                            <ScrollView>
+                            {this.state.gameRecords.map((game) => (
+                                <View style={styles.gameContainer}>
+                                    <Text style={styles.buttonText}>
+                                        {game.newDate}              {game.team1FinalScore}              {game.team2FinalScore}
+                                    </Text>
+                                </View>
+                            ))}
+                            </ScrollView>
+                        </View>
+                        </ImageBackground>
+                    </View>
+                    
+                    <View style={styles.navBar}>
+                    <TouchableHighlight style={styles.navButton}
+                        onPress={this.handleNamesPagePress}
+                    >
+                        <Text style={styles.buttonText}>
+                            Team Names
+                        </Text>
+                    </TouchableHighlight>
+                    
+                    <TouchableHighlight style={styles.navButton}
+                        onPress={this.handleScoringPagePress}
+                    >
+                        <Text style={styles.buttonText}>
+                            Scoring
+                        </Text>
+                    </TouchableHighlight>
+                    
+                    <TouchableHighlight style={styles.navButton}
+                            onPress={this.handleStandingsPagePress}
+                        >
+                            <Text style={styles.buttonText}>
+                                Standings
+                            </Text>
+                    </TouchableHighlight>
+                    
+                    <TouchableHighlight style={styles.navButton}
+                            onPress={this.handlePositionsPagePress}
+                    >
+                            <Text style={styles.buttonText}>
+                                Positions
+                            </Text>
+                    </TouchableHighlight>
+                    </View>
+                </View>
+                
+                <View style={{display: this.state.positionsPageDisplay}}>
+                    <View style={styles.positionsContent}>
+                    <ImageBackground
+                            style={styles.background}
+                            source={{ uri: 'https://as2.ftcdn.net/v2/jpg/04/15/85/45/1000_F_415854570_O2ybQ25EXxcQHWYFRjdqt5L3eOkRhLIw.jpg' }}
+                    >
+                    
+                    <View>
+                        <Text style={styles.namesPageTitle}>
+                            Soccer Positions      
+                        </Text>
+                    </View>
+                    
+                    <View style={styles.positionsBox}>
+                        <ScrollView>
+                            {this.state.positions.map((position) => (
+                                <View style={styles.positionContainer}>
+                                    <Text style={styles.positionsText}>
+                                        {position.name}
+                                    </Text>
+                                    
+                                    <Text style={styles.positionsText}>
+                                        {position.fieldArea}
+                                    </Text>
+                                    
+                                    <Text style={styles.positionsText}>
+                                        Common #'s: {position.commonNumbers}
+                                    </Text>
+                                </View>
+                            ))}
+                        </ScrollView>
+                    </View>
+                    
+                    </ImageBackground>
+                    </View>
+                    
+                    <View style={styles.navBar}>
+                    <TouchableHighlight style={styles.navButton}
+                        onPress={this.handleNamesPagePress}
+                    >
+                        <Text style={styles.buttonText}>
+                            Team Names
+                        </Text>
+                    </TouchableHighlight>
+                    
+                    <TouchableHighlight style={styles.navButton}
+                        onPress={this.handleScoringPagePress}
+                    >
+                        <Text style={styles.buttonText}>
+                            Scoring
+                        </Text>
+                    </TouchableHighlight>
+                    
+                    <TouchableHighlight style={styles.navButton}
+                            onPress={this.handleStandingsPagePress}
+                        >
+                            <Text style={styles.buttonText}>
+                                Standings
+                            </Text>
+                    </TouchableHighlight>
+                    
+                    <TouchableHighlight style={styles.navButton}
+                            onPress={this.handlePositionsPagePress}
+                        >
+                            <Text style={styles.buttonText}>
+                                Positions
+                            </Text>
+                    </TouchableHighlight>
+                    </View>
+                </View>
+            </View>
+        );
+    }
+}
+
+const styles = StyleSheet.create({
+    background: {
+        height: deviceHeight,
+        width: deviceWidth
+    },
+    
+    container: {
+        flex: 1,
+    },
+    
+    content: {
+        height: deviceHeight*7/8,
+        width: deviceWidth,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    
+    teamNamesContent: {
+        height: deviceHeight*7/8,
+        width: deviceWidth,
+        alignItems: 'center',
+    },
+    
+    title: {
+        fontWeight: 'bold',
+        fontFamily: 'calibri',
+        fontSize: 35,
+        color: 'silver',
+        marginTop: deviceWidth/10,
+        textAlign: 'center'
+    },
+    
+    namesPageTitle: {
+        fontWeight: 'bold',
+        fontFamily: 'calibri',
+        fontSize: 35,
+        color: 'silver',
+        marginBottom: deviceWidth/10,
+        textAlign: 'center'
+    },
+    
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center'
+    },
+    
+    button: {
+        borderColor: 'silver',
+        backgroundColor: 'lightgreen',
+        borderWidth: 5,
+        width: deviceWidth/3.1 ,
+        height: deviceHeight/6.1,
+        justifyContent: 'center',
+        margin: deviceWidth/30,
+        marginBottom: deviceWidth/10
+    },
+    
+    buttonText: {
+        fontFamily: 'calibri',
+        fontSize: 14,
+        color: 'black',
+        textAlign: 'center'
+    },
+    
+    submitButtonText: {
+        fontFamily: 'calibri',
+        fontSize: 14,
+        color: 'black',
+        textAlign: 'center'
+    },
+    
+    score: {
+        fontWeight: 'bold',
+        fontSize: 22,
+        fontFamily: 'calibri',
+        color: 'silver',
+        marginBottom: deviceWidth/30,
+        textAlign: 'center'
+    },
+    
+    team1ScoreContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: deviceWidth/30,
+    },
+    
+    team2ScoreContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: deviceHeight/20
+    },
+    
+    teamBox: {
+        width: deviceWidth/2.6,
+        justifyContent: 'center',
+        textAlign: 'center',
+        borderColor: 'silver',
+        backgroundColor: 'lightgreen',
+        borderWidth: 2,
+        fontSize: 22,
+        fontFamily: 'calibri',
+        color: 'black',
+        marginRight: deviceWidth/10
+    },
+    
+    namesPageTeamBox: {
+        width: deviceWidth/1.5,
+        justifyContent: 'center',
+        textAlign: 'center',
+        borderColor: 'silver',
+        backgroundColor: 'lightgreen',
+        borderWidth: 5,
+        fontSize: 26,
+        fontFamily: 'calibri',
+        color: 'black',
+    },
+    
+    teamScoreBox: {
+        width: deviceWidth/7.5,
+        height: deviceWidth/7.5,
+        borderColor: 'silver',
+        borderWidth: '2',
+        justifyContent: 'center',
+    },
+    
+    imageContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center'
+    },
+    
+    navBar: {
+        height: deviceHeight/8,
+        width: deviceWidth,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'silver',
+        borderTopColor: 'black',
+        borderTopWidth: 6,
+        flexDirection: 'row'
+    },
+    
+    navButton: {
+        height: deviceHeight/10,
+        width: deviceWidth/5,
+        backgroundColor: 'white',
+        borderColor: 'lightgreen',
+        borderWidth: 3,
+        marginLeft: deviceWidth/34,
+        marginRight: deviceWidth/34,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    
+    submitButton: {
+        borderColor: 'silver',
+        backgroundColor: 'lightgreen',
+        borderWidth: 3,
+        width: deviceWidth/3.7,
+        height: deviceHeight/16,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginLeft: deviceWidth/12
+    },
+    
+    dateBox: {
+        borderColor: 'silver',
+        backgroundColor: 'lightgreen',
+        borderWidth: 3,
+        width: deviceWidth/2 ,
+        height: deviceHeight/16,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    
+    standingsBox: {
+        height: deviceHeight/3,
+        width: deviceWidth*9/10,
+        backgroundColor: 'lightgreen',
+        borderColor: 'black',
+        borderWidth: 4,
+        alignItems: 'center',
+        textAlign: 'center',
+        marginLeft: deviceWidth/20.5
+    },
+    
+    gameContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        textAlign: 'center'
+    },
+    
+    positionsContent: {
+        height: deviceHeight*7/8,
+        width: deviceWidth,
+        alignItems: 'center',
+    },
+    
+    positionsBox: {
+        height: deviceHeight*2/3,
+        width: deviceWidth*9/10,
+        backgroundColor: 'lightgreen',
+        borderColor: 'black',
+        borderWidth: 4,
+        alignItems: 'center',
+        textAlign: 'center',
+        marginLeft: deviceWidth/20.5
+    },
+    
+    positionContainer: {
+        marginBottom: deviceHeight/8
+    },
+    
+    positionsText: {
+        fontWeight: 'bold',
+        fontFamily: 'calibri',
+        fontSize: 20,
+        color: 'black',
+        textAlign: 'center',
+        marginBottom: 5
+    },
+});
